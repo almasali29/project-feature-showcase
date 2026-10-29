@@ -24,21 +24,21 @@ function Index() {
   return (
     <main>
       <section className="mx-auto grid max-w-6xl gap-16 px-6 pt-24 pb-20 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-        <div>
+        <div className="animate-rise">
           <p className="text-sm font-medium uppercase tracking-widest text-primary">Writing · Citation · Formatting · Integrity</p>
-          <h1 className="mt-6 font-serif text-6xl leading-[1.05] text-foreground">
+          <h1 className="mt-6 font-serif text-4xl sm:text-6xl leading-[1.05] text-foreground">
             Write your paper. <span className="highlight">Skip the LaTeX.</span> Submit with confidence.
           </h1>
           <p className="mt-8 max-w-xl text-lg leading-relaxed text-muted-foreground">
             Other tools make a paper look right. Research Workspace also checks that its numbers, claims,
             citations and reproducibility details hold together.
           </p>
-          <div className="mt-10 flex gap-4">
-            <Link to="/features" className="rounded-md bg-primary px-6 py-3 font-medium text-primary-foreground hover:opacity-90">Explore features</Link>
-            <Link to="/integrity" className="rounded-md border border-border px-6 py-3 font-medium text-foreground hover:bg-secondary">How checks work</Link>
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Link to="/features" className="press rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground hover:opacity-90">Explore features</Link>
+            <Link to="/integrity" className="press rounded-full border border-border px-6 py-3 font-medium text-foreground hover:bg-secondary">How checks work</Link>
           </div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
+        <div className="animate-rise lift rounded-2xl border border-border bg-card p-8 shadow-sm [animation-delay:250ms]">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Issue center · 3 findings</p>
           <ul className="mt-6 space-y-5 text-sm">
             <li className="flex gap-3"><AlertOctagon className="h-5 w-5 shrink-0 text-destructive" /><div><p className="font-medium text-foreground">Confirmed error · Number mismatch</p><p className="text-muted-foreground">Abstract says 94.2% accuracy; Table 3 reports 93.8%.</p></div></li>

@@ -27,7 +27,7 @@ export function SiteHeader() {
           ))}
           <Link
             to="/features"
-            className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:opacity-90"
+            className="press rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground hover:opacity-90"
           >
             Get started
           </Link>
@@ -52,7 +52,7 @@ export function PageIntro({ eyebrow, title, children }: { eyebrow: string; title
   return (
     <section className="mx-auto max-w-3xl px-6 pt-20 pb-12">
       <p className="text-sm font-medium uppercase tracking-widest text-primary">{eyebrow}</p>
-      <h1 className="mt-4 font-serif text-5xl leading-tight text-foreground">{title}</h1>
+      <h1 className="mt-4 font-serif text-4xl sm:text-5xl leading-tight text-foreground">{title}</h1>
       {children && <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{children}</p>}
     </section>
   );

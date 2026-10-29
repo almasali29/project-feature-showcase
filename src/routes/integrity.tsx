@@ -40,7 +40,7 @@ function Integrity() {
             <div><h2 className="text-2xl font-semibold text-foreground">{t}</h2><p className="mt-2 leading-relaxed text-muted-foreground">{d}</p></div>
           </section>
         ))}
-        <section className="rounded-lg border border-border bg-card p-8">
+        <section className="lift rounded-2xl border border-border bg-card p-8">
           <h2 className="font-serif text-2xl text-foreground">Severity is never colour alone</h2>
           <ul className="mt-6 grid gap-5 sm:grid-cols-2">
             {legend.map(({ Icon, cls, label, desc }) => (
