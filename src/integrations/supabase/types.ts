@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          archived: boolean
+          created_at: string
+          description: string | null
+          id: string
+          keywords: string[]
+          target_venue: Database["public"]["Enums"]["venue"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          keywords?: string[]
+          target_venue?: Database["public"]["Enums"]["venue"]
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          keywords?: string[]
+          target_venue?: Database["public"]["Enums"]["venue"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +82,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      venue: "IEEE" | "Springer" | "ACM" | "Elsevier" | "APA"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +209,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      venue: ["IEEE", "Springer", "ACM", "Elsevier", "APA"],
+    },
   },
 } as const
