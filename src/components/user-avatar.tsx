@@ -1,4 +1,4 @@
-export function UserAvatar({ name, url, size = "sm" }: { name?: string | null; url?: string | null; size?: "sm" | "lg" }) {
+export function UserAvatar({ name, url, size = "sm" }: { name?: string | null | undefined; url?: string | null | undefined; size?: "sm" | "lg" }) {
   const cls = size === "lg" ? "h-16 w-16 text-2xl" : "h-9 w-9 text-sm";
   const initial = (name || "?").trim().charAt(0).toUpperCase();
   return url ? (

@@ -25,14 +25,14 @@ function ProjectPage() {
 
   async function setArchived(archived: boolean) {
     const { error } = await supabase.from("projects").update({ archived }).eq("id", id);
-    if (error) return toast.error("Couldn't update the project.");
+    if (error) { toast.error("Couldn't update the project."); return; }
     toast.success(archived ? "Project archived" : "Project restored");
     refresh();
   }
   async function remove() {
     if (!confirm("Delete this project permanently?")) return;
     const { error } = await supabase.from("projects").delete().eq("id", id);
-    if (error) return toast.error("Couldn't delete the project.");
+    if (error) { toast.error("Couldn't delete the project."); return; }
     toast.success("Project deleted");
     refresh();
     navigate({ to: "/dashboard" });
