@@ -1,6 +1,46 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@/hooks/use-session";
+import { profileQuery } from "@/lib/projects";
+import { UserAvatar } from "@/components/user-avatar";
+
+function AccountArea() {
+  const { user, loading } = useSession();
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { data: profile } = useQuery({ ...profileQuery(user?.id ?? ""), enabled: !!user });
+  if (loading) return <span className="h-9 w-24" />;
+  if (!user)
+    return (
+      <Link to="/auth" className="press rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground">
+        Sign in
+      </Link>
+    );
+  return (
+    <div className="flex items-center gap-3">
+      <Link to="/dashboard" className="hidden font-medium text-foreground hover:text-primary sm:inline">Dashboard</Link>
+      <Link to="/profile" aria-label="Profile" className="press rounded-full">
+        <UserAvatar name={profile?.display_name ?? user.email} url={profile?.avatar_url} />
+      </Link>
+      <button
+        aria-label="Sign out"
+        className="press rounded-full p-2 text-muted-foreground hover:text-foreground"
+        onClick={async () => {
+          await qc.cancelQueries();
+          qc.clear();
+          await supabase.auth.signOut();
+          navigate({ to: "/auth", replace: true });
+        }}
+      >
+        <LogOut className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
 
 const nav = [
   { to: "/features", label: "Features" },
@@ -61,12 +101,7 @@ export function SiteHeader() {
               {n.label}
             </Link>
           ))}
-          <Link
-            to="/features"
-            className="press hidden rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground sm:inline-block"
-          >
-            Get started
-          </Link>
+          <AccountArea />
           <button aria-label="Menu" onClick={() => setOpen(!open)} className="press rounded-full p-2 text-foreground md:hidden">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
