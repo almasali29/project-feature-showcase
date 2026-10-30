@@ -126,7 +126,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-10 text-sm text-muted-foreground sm:flex-row sm:justify-between">
         <p className="font-serif text-base text-foreground">Research Workspace</p>
-        <p>Write, format and verify your paper in one place. A 7th semester B.Tech project.</p>
+        <p>Write, format and verify your paper in one place.</p>
       </div>
     </footer>
   );
