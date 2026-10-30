@@ -32,7 +32,7 @@ function Profile() {
         e.preventDefault();
         if (!user) return;
         const { error } = await supabase.from("profiles").upsert({ id: user.id, display_name: name.trim().slice(0, 100) || null, avatar_url: avatar.trim() || null });
-        if (error) return toast.error("Couldn't save your profile.");
+        if (error) { toast.error("Couldn't save your profile."); return; }
         toast.success("Profile saved");
         qc.invalidateQueries({ queryKey: ["profile", user.id] });
       }}>

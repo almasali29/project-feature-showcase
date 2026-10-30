@@ -34,7 +34,7 @@ function Index() {
             citations and reproducibility details hold together.
           </p>
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link to="/features" className="press rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground hover:opacity-90">Explore features</Link>
+            <Link to="/auth" className="press rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground">Start writing</Link>
             <Link to="/integrity" className="press rounded-full border border-border px-6 py-3 font-medium text-foreground hover:bg-secondary">How checks work</Link>
           </div>
         </div>
