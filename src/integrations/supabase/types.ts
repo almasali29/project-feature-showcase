@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      manuscripts: {
+        Row: {
+          content: Json
+          project_id: string
+          revision: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          project_id: string
+          revision?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          content?: Json
+          project_id?: string
+          revision?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manuscripts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
