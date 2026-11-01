@@ -8,6 +8,13 @@
       "when": 1793287094285,
       "tag": "0000_profiles_projects",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793527994590,
+      "tag": "0001_manuscript_workspace",
+      "breakpoints": true
     }
   ]
 }

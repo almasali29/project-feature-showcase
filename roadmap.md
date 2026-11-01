@@ -1,8 +1,11 @@
 # Roadmap
 - [x] Sign-in with Google, profile (name, avatar), projects (create/edit/archive/delete, target venue)
-- [ ] Writing editor (sections, autosave, captions, cross-refs)
-- [ ] Reference library + citation checks
-- [ ] Formatting for 5 venues + PDF/DOCX export
-- [ ] Integrity engine + issue center
-- [ ] Figures/charts
-- [ ] Submission readiness
+- [ ] Writing editor (sections, rich text, autosave, snapshots, captions, cross-refs)
+- [ ] Project reference library + citation checks
+- [ ] Five starting venue profiles, editable rules, preview and PDF/DOCX export
+- [ ] Deterministic integrity checks + issue center
+- [ ] Figures and CSV charts
+- [ ] Submission readiness + downloadable report
+- [ ] First-time guidance and contextual help
+- [ ] Verify signed-in writing → save → citation → format → checks → export
+- [ ] Advanced SRS modules: semantic AI analysis, reader, discovery, diagram editor, cross-project library and package exports
