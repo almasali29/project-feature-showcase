@@ -8,6 +8,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Write, auto-format to IEEE, Springer, ACM, Elsevier or APA, and integrity-check your paper before submission." },
       { property: "og:title", content: "Research Workspace" },
       { property: "og:description", content: "Other tools make a paper look right. This one checks it holds together." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,

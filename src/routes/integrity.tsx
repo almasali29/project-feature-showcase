@@ -9,6 +9,8 @@ export const Route = createFileRoute("/integrity")({
       { name: "description", content: "Number consistency, claim-evidence mapping and a reproducibility checklist for your paper." },
       { property: "og:title", content: "Integrity engine — Research Workspace" },
       { property: "og:description", content: "Check that your paper holds together before reviewers do." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Integrity,

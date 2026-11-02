@@ -11,6 +11,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Sign in to Research Workspace with your Google account." },
       { property: "og:title", content: "Sign in — Research Workspace" },
       { property: "og:description", content: "Continue with Google to open your projects." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
