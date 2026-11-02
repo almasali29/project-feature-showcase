@@ -6,9 +6,10 @@ import { ArrowLeft, Archive, ArchiveRestore, Pencil, Trash2 } from "lucide-react
 import { supabase } from "@/integrations/supabase/client";
 import { projectQuery, parseKeywords } from "@/lib/projects";
 import { ProjectForm } from "@/components/project-form";
+import { PaperWorkspace } from "@/components/paper-workspace";
 
 export const Route = createFileRoute("/_authenticated/projects/$id")({
-  head: () => ({ meta: [{ title: "Project — Research Workspace" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Paper workspace — Research Workspace" }, { name: "description", content: "Write, cite, format and review your private research manuscript." }, { property: "og:title", content: "Paper workspace — Research Workspace" }, { property: "og:description", content: "Writing, citations, figures and submission screening for your research project." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: ProjectPage,
 });
 
@@ -39,7 +40,7 @@ function ProjectPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-6 pt-10">
+    <main className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
       <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="h-4 w-4" /> All projects</Link>
       {editing ? (
         <section className="animate-rise mt-8 rounded-2xl border border-border bg-card p-8">
@@ -62,7 +63,7 @@ function ProjectPage() {
             <span className="rounded-full bg-accent/30 px-3 py-1 text-sm font-medium text-foreground">{p.target_venue}</span>
             {p.archived && <span className="rounded-full bg-secondary px-3 py-1 text-sm text-muted-foreground">Archived</span>}
           </div>
-          <h1 className="mt-4 font-serif text-4xl leading-tight text-foreground sm:text-5xl">{p.title}</h1>
+           <h1 className="mt-4 font-serif text-3xl leading-tight text-foreground sm:text-4xl">{p.title}</h1>
           {p.description && <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{p.description}</p>}
           {p.keywords.length > 0 && (
             <ul className="mt-6 flex flex-wrap gap-2">{p.keywords.map((k) => <li key={k} className="rounded-full border border-border px-3 py-1 text-sm text-foreground">{k}</li>)}</ul>
@@ -75,10 +76,7 @@ function ProjectPage() {
             </button>
             <button onClick={remove} className="press inline-flex items-center gap-2 rounded-full border border-destructive/40 px-5 py-2.5 text-destructive"><Trash2 className="h-4 w-4" /> Delete</button>
           </div>
-          <section className="mt-14 rounded-2xl border border-dashed border-border p-8">
-            <p className="font-serif text-2xl text-foreground">Writing, references and checks</p>
-            <p className="mt-2 text-muted-foreground">The editor, reference library and integrity checks for this project are coming in the next stage.</p>
-          </section>
+           <PaperWorkspace project={p} />
         </article>
       )}
     </main>

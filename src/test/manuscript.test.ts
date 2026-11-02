@@ -15,7 +15,7 @@ describe("Manuscript rules", () => {
     const before = JSON.stringify(m); expect(analyze(m, "IEEE", []).some((f) => f.title === "Review strong claim")).toBe(true); expect(JSON.stringify(m)).toBe(before);
   });
   it("keeps blockers blocking after acknowledgement", () => {
-    const m = newManuscript(); m.statuses.authors = "acknowledged";
+    const m = newManuscript(); m.statuses['authors'] = "acknowledged";
     expect(readiness(analyze(m, "IEEE", [])).blockers.some((f) => f.id === "authors")).toBe(true);
   });
   it("scores readiness out of 100", () => expect(readiness([]).score).toBe(100));

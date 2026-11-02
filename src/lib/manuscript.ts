@@ -21,7 +21,7 @@ export function readManuscript(value: unknown): Manuscript {
   return { ...newManuscript(), ...value } as Manuscript;
 }
 export function plainText(html: string): string {
-  return html.replace(/<\/(p|h[1-6]|tr|li)>/g, ". ").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+  return html.replace(/<\/(p|h[1-6]|tr|li)>/g, " ").replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
 }
 export function wordCount(html: string) { return plainText(html).split(/\s+/).filter(Boolean).length; }
 export function rulesFor(m: Manuscript, venue: Venue) { return m.rules[venue] ?? STARTER_RULES[venue]; }

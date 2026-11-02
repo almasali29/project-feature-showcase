@@ -8,7 +8,7 @@ import { profileQuery } from "@/lib/projects";
 import { UserAvatar } from "@/components/user-avatar";
 
 export const Route = createFileRoute("/_authenticated/profile")({
-  head: () => ({ meta: [{ title: "Profile — Research Workspace" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Profile — Research Workspace" }, { name: "description", content: "Manage your Research Workspace name and avatar." }, { property: "og:title", content: "Profile — Research Workspace" }, { property: "og:description", content: "Your researcher profile settings." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Profile,
 });
 

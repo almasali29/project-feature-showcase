@@ -8,6 +8,8 @@ export const Route = createFileRoute("/features")({
       { name: "description", content: "Writing, citations, no-LaTeX formatting, figures and submission readiness in one workspace." },
       { property: "og:title", content: "Features — Research Workspace" },
       { property: "og:description", content: "Everything you need to go from draft to submission." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Features,

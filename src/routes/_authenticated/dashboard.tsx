@@ -8,7 +8,7 @@ import { projectsQuery, parseKeywords } from "@/lib/projects";
 import { ProjectForm } from "@/components/project-form";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Research Workspace" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — Research Workspace" }, { name: "description", content: "Manage your private research projects and manuscripts." }, { property: "og:title", content: "Dashboard — Research Workspace" }, { property: "og:description", content: "Your research projects in one place." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
 

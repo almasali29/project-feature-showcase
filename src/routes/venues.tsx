@@ -8,6 +8,8 @@ export const Route = createFileRoute("/venues")({
       { name: "description", content: "Automatic formatting for IEEE, Springer, ACM, Elsevier and APA." },
       { property: "og:title", content: "Supported venues — Research Workspace" },
       { property: "og:description", content: "Pick a venue and your paper is formatted automatically." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Venues,
