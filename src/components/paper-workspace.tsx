@@ -51,7 +51,7 @@ function Workspace({ project, initial, initialRevision }: { project: Project; in
       if (result.error) throw result.error;
       if (!result.data) throw new Error("Another tab changed this paper. Copy your latest changes before reloading.");
       revision.current = result.data.revision; saved.current = payload;
-      qc.setQueryData(manuscriptQuery(project.id).queryKey, { project_id: project.id, user_id: user.id, content, revision: result.data.revision, updated_at: new Date().toISOString() });
+      qc.setQueryData(["manuscript", project.id], { project_id: project.id, user_id: user.id, content, revision: result.data.revision, updated_at: new Date().toISOString() });
       setSaveStatus(JSON.stringify(latest.current) === payload ? "Saved" : "Unsaved changes");
     } catch (e) { setSaveStatus("Save failed"); toast.error(e instanceof Error ? e.message : "Could not save. Your changes remain here; retry before leaving."); }
     finally { saving.current = false; }

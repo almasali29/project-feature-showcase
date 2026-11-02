@@ -20,6 +20,6 @@ export function bibliography(refs: Reference[], venue: Venue): string[] {
   });
 }
 export function registerStyles(styles: Record<string, string>) {
-  const csl = plugins.config.get("@csl");
+  const csl = plugins.config.get("@csl") as unknown as { templates: { add: (name: string, xml: string) => void } };
   for (const [name, xml] of Object.entries(styles)) csl.templates.add(name, xml);
 }
