@@ -20,7 +20,7 @@ export function renderSection(html: string, m: Manuscript, project: Project) {
 export function FigureView({ figure }: { figure: Figure }) {
   if (figure.kind === "image") return <img src={figure.image} alt={figure.caption || "Manuscript figure"} className="mx-auto max-h-96 max-w-full object-contain" />;
   const grid = <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />;
-  const axes = <><XAxis dataKey="label" tick={{ fill: "var(--foreground)", fontSize: 11 }} /><YAxis tick={{ fill: "var(--foreground)", fontSize: 11 }} /><Tooltip /></>;
+  const axes = [<XAxis key="x" dataKey="label" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <YAxis key="y" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <Tooltip key="tooltip" />];
   const color = figure.grayscale ? "var(--foreground)" : "var(--primary)";
   return <div className="h-64 w-full"><ResponsiveContainer width="100%" height="100%">{figure.kind === "line" ? <LineChart data={figure.data}>{grid}{axes}<Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} /></LineChart> : figure.kind === "scatter" ? <ScatterChart>{grid}{axes}<Scatter data={figure.data} dataKey="value" fill={color} /></ScatterChart> : <BarChart data={figure.data}>{grid}{axes}<Bar dataKey="value" fill={color} /></BarChart>}</ResponsiveContainer><p className="text-center text-xs text-muted-foreground">{figure.xLabel} · {figure.yLabel}</p></div>;
 }
