@@ -1,5 +1,4 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell } from "docx";
-import { saveAs } from "file-saver";
 import type { Manuscript } from "./manuscript";
 import type { Project } from "./projects";
 import { rulesFor } from "./manuscript";
@@ -27,5 +26,10 @@ export async function exportWord(m: Manuscript, project: Project) {
   children.push(new Paragraph({ text: "References", heading: HeadingLevel.HEADING_1 }), ...bibliography(m.references, project.target_venue).map((text) => new Paragraph(text)));
   const margin = Math.round(rules.margin * 56.693);
   const doc = new Document({ styles: { default: { document: { run: { font: "Times New Roman", size: rules.fontSize * 2 } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: margin, bottom: margin, left: margin, right: margin } }, column: { count: rules.columns, space: 400 } }, children }] });
-  saveAs(await Packer.toBlob(doc), `${project.title.replace(/[^a-z0-9 -]/gi, "") || "manuscript"}.docx`);
+  const blob = await Packer.toBlob(doc);
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url; link.download = `${project.title.replace(/[^a-z0-9 -]/gi, "") || "manuscript"}.docx`;
+  document.body.append(link); link.click(); link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 10000);
 }

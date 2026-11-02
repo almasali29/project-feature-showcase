@@ -16,7 +16,7 @@ export function bibliography(refs: Reference[], venue: Venue): string[] {
       const [family, given] = name.trim().split(","); return { family: family?.trim() ?? name, given: given?.trim() ?? "" };
     }), issued: { "date-parts": [[Number(r.year) || 0]] }, "container-title": r.venue, DOI: r.doi, URL: r.url }]);
     const output = cite.format("bibliography", { format: "text", style: template, lang: "en-US" }) as string;
-    return venue === "APA" ? output.trim() : `[${i + 1}] ${output.trim().replace(/^\s*\d+\.?\s*/, "")}`;
+    return venue === "APA" ? output.trim() : `[${i + 1}] ${output.trim().replace(/^\s*(?:\[\d+\]|\d+\.)\s*/, "")}`;
   });
 }
 export function registerStyles(styles: Record<string, string>) {
