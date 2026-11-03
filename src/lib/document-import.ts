@@ -20,7 +20,8 @@ export async function extractDocument(file: File): Promise<{ sections: Section[]
     const pdfjs = await import("pdfjs-dist");
     const worker = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
     pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-    const pdf = await pdfjs.getDocument({ data: buffer, isEvalSupported: false }).promise;
+    const task = pdfjs.getDocument({ data: buffer });
+    const pdf = await task.promise;
     try {
       const paragraphs: string[] = [];
       for (let i = 1; i <= pdf.numPages; i++) {
@@ -29,7 +30,7 @@ export async function extractDocument(file: File): Promise<{ sections: Section[]
         paragraphs.push(`<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`);
       }
       html = paragraphs.join("");
-    } finally { await pdf.destroy(); }
+    } finally { await task.destroy(); }
   }
   const container = document.createElement("div"); container.innerHTML = html;
   const sections: Section[] = []; let current: Section = { id: crypto.randomUUID(), title: file.name.replace(/\.(docx|pdf)$/i, ""), html: "" };
