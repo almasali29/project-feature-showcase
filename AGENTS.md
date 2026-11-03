@@ -15,3 +15,5 @@
 - Load rich editing and preview tools lazily inside the authenticated workspace; browser-only export and sanitization must not execute during SSR.
 - Venue layouts use configurable starting rules and local CSL styles; never describe their output as publisher-certified without rule-accuracy validation.
 - Readiness findings are recalculated from current content; blockers cannot be acknowledged away, and heuristic semantic findings must remain warnings.
+- Read document files on the device and import extracted sections only; original uploaded files are not retained, limiting document exposure.
+- AI review reads owner-scoped saved manuscripts inside an authenticated server function; gateway requests stay server-only and access denials persist without automatic replay.
