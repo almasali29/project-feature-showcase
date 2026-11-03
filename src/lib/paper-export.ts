@@ -5,7 +5,7 @@ import { rulesFor } from "./manuscript";
 import { bibliography } from "./citations";
 import { renderSection } from "@/components/paper-preview";
 
-export async function exportWord(m: Manuscript, project: Project) {
+export async function wordBlob(m: Manuscript, project: Project) {
   const rules = rulesFor(m, project.target_venue);
   const children: (Paragraph | Table)[] = [new Paragraph({ text: project.title, heading: HeadingLevel.TITLE }), new Paragraph(m.authors)];
   for (const s of m.sections) {
@@ -26,10 +26,20 @@ export async function exportWord(m: Manuscript, project: Project) {
   children.push(new Paragraph({ text: "References", heading: HeadingLevel.HEADING_1 }), ...bibliography(m.references, project.target_venue).map((text) => new Paragraph(text)));
   const margin = Math.round(rules.margin * 56.693);
   const doc = new Document({ styles: { default: { document: { run: { font: "Times New Roman", size: rules.fontSize * 2 } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: margin, bottom: margin, left: margin, right: margin } }, column: { count: rules.columns, space: 400 } }, children }] });
-  const blob = await Packer.toBlob(doc);
+  return Packer.toBlob(doc);
+}
+export async function exportWord(m: Manuscript, project: Project) {
+  const blob = await wordBlob(m, project);
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url; link.download = `${project.title.replace(/[^a-z0-9 -]/gi, "") || "manuscript"}.docx`;
   document.body.append(link); link.click(); link.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+export async function exportPackage(m: Manuscript, project: Project, report: string) {
+  const { zipSync, strToU8 } = await import("fflate");
+  const word = new Uint8Array(await (await wordBlob(m, project)).arrayBuffer());
+  const zipped = zipSync({ "manuscript.docx": word, "readiness-report.txt": strToU8(report), "manuscript-source.json": strToU8(JSON.stringify(m, null, 2)), "README.txt": strToU8("Review the Word file and export your formatted PDF separately. Confirm all publisher requirements. This package is not automatically submitted.") });
+  const url = URL.createObjectURL(new Blob([new Uint8Array(zipped)], { type: "application/zip" }));
+  const a = document.createElement("a"); a.href = url; a.download = "submission-draft.zip"; a.click(); window.setTimeout(() => URL.revokeObjectURL(url), 10000);
 }

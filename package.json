@@ -17,6 +17,7 @@
     "rolldown": "1.2.1"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.106",
     "@citation-js/core": "^0.9.0",
     "@citation-js/plugin-bibjson": "^0.9.0",
     "@citation-js/plugin-csl": "^0.9.0",
@@ -62,6 +63,7 @@
     "@types/file-saver": "^2.0.7",
     "@types/katex": "^0.16.8",
     "@types/papaparse": "^5.5.2",
+    "ai": "^7.0.159",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

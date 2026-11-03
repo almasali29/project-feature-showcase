@@ -3,11 +3,11 @@ import { PenLine, BookOpen, ChartColumn, LayoutTemplate, ShieldCheck, Send, Arro
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 const steps = [
-  { title: "Start with your paper", Icon: PenLine, text: "Choose a section on the left and write in the centre. Use the toolbar for headings, tables and equations. Changes save automatically; wait for Saved before leaving.", tab: "Writing" },
+  { title: "Start with your paper", Icon: PenLine, text: "Choose a section and write in the centre, or open a PDF/DOCX in Reader to import its text. Use the toolbar for headings, tables and equations. Changes save automatically; wait for Saved before leaving.", tab: "Writing" },
   { title: "Build your reference library", Icon: BookOpen, text: "Add each source in References. Enter authors as Surname, Given name; separate authors with semicolons. Return to Writing to insert the source into your current section.", tab: "References" },
   { title: "Add figures and results", Icon: ChartColumn, text: "Paste two-column CSV for a bar, line or scatter chart, or upload an image. Give it a caption, then insert a figure reference in Writing. Figure numbers update automatically.", tab: "Figures" },
   { title: "Choose your formatting", Icon: LayoutTemplate, text: "Select your venue, enter author details and adjust its starting rules to your exact journal or conference instructions. Preview updates live. PDF uses your browser’s Save as PDF; Word exports text and tables.", tab: "Formatting" },
-  { title: "Review every finding", Icon: ShieldCheck, text: "Checks show missing citations, structure and metadata errors first. Number differences and claim/reproducibility screening are warnings, not scientific verdicts. Open a finding to return to its section.", tab: "Integrity" },
+  { title: "Review every finding", Icon: ShieldCheck, text: "Checks show citation, structure and metadata errors first. Request an AI review for contextual claim and reproducibility feedback; saved text is sent to Lovable AI. All AI findings are potential issues, never scientific verdicts.", tab: "Integrity" },
   { title: "Prepare for submission", Icon: Send, text: "Readiness groups blockers and warnings. Fix blockers; review or acknowledge warnings. Download the report and inspect your exported paper against the publisher’s instructions. This score is not acceptance or formatting certification.", tab: "Readiness" },
 ];
 export function WorkspaceGuide({ userId, onTab }: { userId: string; onTab: (tab: string) => void }) {
