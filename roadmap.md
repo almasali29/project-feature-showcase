@@ -1,11 +1,13 @@
 # Roadmap
 - [x] Sign-in with Google, profile (name, avatar), projects (create/edit/archive/delete, target venue)
-- [ ] Writing editor (sections, rich text, autosave, snapshots, captions, cross-refs)
-- [ ] Project reference library + citation checks
-- [ ] Five starting venue profiles, editable rules, preview and PDF/DOCX export
-- [ ] Deterministic integrity checks + issue center
-- [ ] Figures and CSV charts
-- [ ] Submission readiness + downloadable report
-- [ ] First-time guidance and contextual help
-- [ ] Verify signed-in writing → save → citation → format → checks → export
-- [ ] Advanced SRS modules: semantic AI analysis, reader, discovery, diagram editor, cross-project library and package exports
+- [x] Writing editor: sections, rich text, autosave, snapshots and figure cross-references
+- [x] Project reference library and missing/unused/duplicate/metadata citation checks
+- [x] Five starting venue profiles, editable rules, live preview, print-to-PDF and text/table DOCX export
+- [x] Rule-based integrity screening and issue center
+- [x] Image figures and bar/line/scatter CSV charts
+- [x] Submission screening score, blocker/warning review, downloadable report and draft ZIP package
+- [x] First-time guide, replayable help and theme toggle
+- [x] Signed-in save/reload, citation, chart, preview, Word and report workflow verified
+- [x] Device-local DOCX reader/import and authenticated AI claim/reproducibility review verified
+- [ ] Full SRS completion: automatic table captions, explicit same-result number comparisons, saved AI findings integrated into readiness, complete figure DOCX embedding, box plots/confusion matrices, diagram/evidence graph, cross-project library, discovery and experiments
+- [ ] Publisher-template 90% accuracy certification and full pagination checks — requires publisher-specific templates and representative validation papers
