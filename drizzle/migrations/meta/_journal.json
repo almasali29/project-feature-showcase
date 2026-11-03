@@ -15,6 +15,13 @@
       "when": 1793527994590,
       "tag": "0001_manuscript_workspace",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793735080909,
+      "tag": "0002_analysis_access_state",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      analysis_access_state: {
+        Row: {
+          blocked_reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          blocked_reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          blocked_reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       manuscripts: {
         Row: {
           content: Json
