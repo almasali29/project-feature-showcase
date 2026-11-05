@@ -3,14 +3,33 @@ import StarterKit from "@tiptap/starter-kit";
 import { TableKit } from "@tiptap/extension-table";
 import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Extension } from "@tiptap/core";
+import { Plugin, PluginKey } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
+
+// Shows citation/figure tokens as readable chips while keeping the stored [[cite:id]] token stable.
+const tokenKey = new PluginKey("token-labels");
+function tokenLabels(get: () => Record<string, string>) {
+  return Extension.create({ name: "tokenLabels", addProseMirrorPlugins: () => [new Plugin({ key: tokenKey, props: { decorations(state) {
+    const decos: Decoration[] = []; const labels = get();
+    state.doc.descendants((node, pos) => { if (!node.isText || !node.text) return; for (const m of node.text.matchAll(/\[\[((?:cite|fig):[^\]]+)\]\]/g)) {
+      const from = pos + (m.index ?? 0), to = from + m[0].length; const label = labels[m[1] ?? ""] ?? (m[1]?.startsWith("fig") ? "Missing figure" : "Missing reference");
+      decos.push(Decoration.inline(from, to, { class: "token-hidden" }), Decoration.widget(to, () => { const el = document.createElement("span"); el.className = `token-chip${labels[m[1] ?? ""] ? "" : " token-missing"}`; el.textContent = label; return el; }, { side: -1 }));
+    } });
+    return DecorationSet.create(state.doc, decos);
+  } } })] });
+}
 import { Bold, Italic, Undo2, Redo2, List, Table2, Heading2, Sigma, Superscript as SupIcon, Subscript as SubIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ManuscriptEditor({ html, onChange, insertion, onInserted }: { html: string; onChange: (html: string) => void; insertion: string; onInserted: () => void }) {
-  const editor = useEditor({ extensions: [StarterKit, TableKit, Superscript, Subscript], content: html, immediatelyRender: false, onUpdate: ({ editor }) => onChange(editor.getHTML()), editorProps: { attributes: { class: "manuscript-prose min-h-[440px] outline-none", "aria-label": "Section content" } } });
+export function ManuscriptEditor({ html, onChange, insertion, onInserted, labels = {} }: { labels?: Record<string, string>; html: string; onChange: (html: string) => void; insertion: string; onInserted: () => void }) {
+  const labelsRef = useRef(labels); labelsRef.current = labels;
+  const editor = useEditor({ extensions: [StarterKit, TableKit, Superscript, Subscript, tokenLabels(() => labelsRef.current)], content: html, immediatelyRender: false, onUpdate: ({ editor }) => onChange(editor.getHTML()), editorProps: { attributes: { class: "manuscript-prose min-h-[440px] outline-none", "aria-label": "Section content" } } });
   useEffect(() => { if (editor && html !== editor.getHTML()) editor.commands.setContent(html, { emitUpdate: false }); }, [editor, html]);
   useEffect(() => { if (editor && insertion) { editor.chain().focus().insertContent(insertion).run(); onInserted(); } }, [editor, insertion, onInserted]);
+  const labelKey = JSON.stringify(labels);
+  useEffect(() => { if (editor && !editor.isDestroyed) editor.view.dispatch(editor.state.tr.setMeta(tokenKey, labelKey)); }, [editor, labelKey]);
   const tools = [
     { label: "Bold", Icon: Bold, run: () => editor?.chain().focus().toggleBold().run() },
     { label: "Italic", Icon: Italic, run: () => editor?.chain().focus().toggleItalic().run() },
