@@ -28,6 +28,8 @@ export function ManuscriptEditor({ html, onChange, insertion, onInserted, labels
   const editor = useEditor({ extensions: [StarterKit, TableKit, Superscript, Subscript, tokenLabels(() => labelsRef.current)], content: html, immediatelyRender: false, onUpdate: ({ editor }) => onChange(editor.getHTML()), editorProps: { attributes: { class: "manuscript-prose min-h-[440px] outline-none", "aria-label": "Section content" } } });
   useEffect(() => { if (editor && html !== editor.getHTML()) editor.commands.setContent(html, { emitUpdate: false }); }, [editor, html]);
   useEffect(() => { if (editor && insertion) { editor.chain().focus().insertContent(insertion).run(); onInserted(); } }, [editor, insertion, onInserted]);
+  const labelKey = JSON.stringify(labels);
+  useEffect(() => { if (editor && !editor.isDestroyed) editor.view.dispatch(editor.state.tr.setMeta(tokenKey, labelKey)); }, [editor, labelKey]);
   const tools = [
     { label: "Bold", Icon: Bold, run: () => editor?.chain().focus().toggleBold().run() },
     { label: "Italic", Icon: Italic, run: () => editor?.chain().focus().toggleItalic().run() },
