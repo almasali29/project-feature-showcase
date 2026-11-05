@@ -13,9 +13,9 @@ registerStyles({ ieee, springer, acm, elsevier });
 
 export function renderSection(html: string, m: Manuscript, project: Project) {
   const safe = DOMPurify.sanitize(html);
-  return safe.replace(/\[\[cite:([^\]]+)\]\]/g, (_match, id: string) => {
+  return safe.replace(/\[\[cite:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_match, id: string) => {
     const index = m.references.findIndex((r) => r.id === id); const r = m.references[index]; return r ? DOMPurify.sanitize(citationLabel(r, index, project.target_venue)) : "[Missing reference]";
-  }).replace(/\[\[fig:([^\]]+)\]\]/g, (_match, id: string) => { const index = m.figures.findIndex((f) => f.id === id); return index < 0 ? "[Missing figure]" : `Figure ${index + 1}`; }).replace(/\$\$([^$]+)\$\$/g, (_match, tex: string) => katex.renderToString(tex, { throwOnError: false, trust: false }));
+  }).replace(/\[\[fig:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_match, id: string) => { const index = m.figures.findIndex((f) => f.id === id); return index < 0 ? "[Missing figure]" : `Figure ${index + 1}`; }).replace(/\$\$([^$]+)\$\$/g, (_match, tex: string) => katex.renderToString(tex, { throwOnError: false, trust: false }));
 }
 export function FigureView({ figure }: { figure: Figure }) {
   if (figure.kind === "image") return <img src={figure.image} alt={figure.caption || "Manuscript figure"} className="mx-auto max-h-96 max-w-full object-contain" />;
