@@ -142,3 +142,7 @@ h1, h2 { letter-spacing: 0; }
 @media (prefers-reduced-motion: reduce) {
   .reveal, .animate-rise, .highlight { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
 }
+
+.manuscript-prose .token-hidden { font-size: 0; letter-spacing: 0; }
+.manuscript-prose .token-chip { display: inline-block; margin: 0 0.1em; padding: 0 0.4em; border-radius: 0.3em; background: color-mix(in oklab, var(--primary) 12%, transparent); color: var(--primary); font-size: 0.9em; user-select: none; }
+.manuscript-prose .token-missing { background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); }
