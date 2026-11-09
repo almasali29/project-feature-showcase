@@ -124,6 +124,36 @@ export type Database = {
         }
         Relationships: []
       }
+      venue_guidelines: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          uploaded_by: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          uploaded_by: string
+          venue: Database["public"]["Enums"]["venue"]
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          uploaded_by?: string
+          venue?: Database["public"]["Enums"]["venue"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
