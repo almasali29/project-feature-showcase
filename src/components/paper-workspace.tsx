@@ -13,6 +13,7 @@ import { newManuscript, readManuscript, wordCount, analyze, readiness, rulesFor,
 import { VENUES, type Project, type Venue } from "@/lib/projects";
 import { WorkspaceGuide } from "./workspace-guide";
 import { SemanticReviewPanel } from "./semantic-review-panel";
+import { VenueGuidelinesPanel } from "./venue-guidelines-panel";
 const Reader = lazy(() => import("./document-reader").then((m) => ({ default: m.DocumentReader })));
 const Writer = lazy(() => import("./manuscript-editor").then((m) => ({ default: m.ManuscriptEditor })));
 const Preview = lazy(() => import("./paper-preview").then((m) => ({ default: m.PaperPreview })));
