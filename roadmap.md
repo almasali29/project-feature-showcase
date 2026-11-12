@@ -9,5 +9,14 @@
 - [x] First-time guide, replayable help and theme toggle
 - [x] Signed-in save/reload, citation, chart, preview, Word and report workflow verified
 - [x] Device-local DOCX reader/import and authenticated AI claim/reproducibility review verified
-- [ ] Full SRS completion: automatic table captions, explicit same-result number comparisons, saved AI findings integrated into readiness, complete figure DOCX embedding, box plots/confusion matrices, diagram/evidence graph, cross-project library, discovery and experiments
+- [ ] Automatic numbered table captions with editable caption text
+- [ ] Explicit comparisons between manuscript numbers, figures and linked experiment results
+- [ ] Save the latest AI review and include its findings in readiness
+- [ ] Embed figure images in Word; export figures as PNG, SVG and PDF
+- [ ] Box plots, confusion matrices, configurable charts and figure quality checks
+- [ ] Diagram editor and interactive evidence graph with a table alternative
+- [ ] Cross-project reference import
+- [ ] Scholarly paper discovery, preview, comparison and add-to-library
+- [ ] Experiment, dataset and result records feeding charts
+- [ ] Verify the new signed-in workflows end to end
 - [ ] Publisher-template 90% accuracy certification and full pagination checks — requires publisher-specific templates and representative validation papers

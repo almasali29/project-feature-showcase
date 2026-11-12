@@ -1,0 +1,16 @@
+import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GraphCanvas } from "./graph-canvas";
+import type { DiagramEdge, DiagramNode } from "@/lib/manuscript";
+
+const field = "w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
+export function DiagramEditor({ value, onChange }: { value: { nodes: DiagramNode[]; edges: DiagramEdge[] }; onChange: (value: { nodes: DiagramNode[]; edges: DiagramEdge[] }) => void }) {
+  const [selected, setSelected] = useState(""); const [from, setFrom] = useState(""); const [to, setTo] = useState(""); const [edgeLabel, setEdgeLabel] = useState("");
+  const node = value.nodes.find((n) => n.id === selected);
+  return <div className="space-y-4"><GraphCanvas nodes={value.nodes} edges={value.edges} onSelect={setSelected} onMove={(id, x, y) => onChange({ ...value, nodes: value.nodes.map((n) => n.id === id ? { ...n, x, y } : n) })} label="Diagram editor. Drag boxes to move them." />
+    <div className="flex flex-wrap gap-2"><Button type="button" variant="outline" onClick={() => { const id = crypto.randomUUID(); onChange({ ...value, nodes: [...value.nodes, { id, label: `Box ${value.nodes.length + 1}`, x: 50, y: 30 }] }); setSelected(id); }}><Plus /> Add box</Button>{node && <input aria-label="Selected box label" className={`${field} max-w-64`} value={node.label} onChange={(e) => onChange({ ...value, nodes: value.nodes.map((n) => n.id === node.id ? { ...n, label: e.target.value } : n) })} />}{node && <Button type="button" variant="ghost" size="icon" aria-label="Delete selected box" onClick={() => { onChange({ nodes: value.nodes.filter((n) => n.id !== node.id), edges: value.edges.filter((e) => e.from !== node.id && e.to !== node.id) }); setSelected(""); }}><Trash2 /></Button>}</div>
+    {value.nodes.length > 1 && <div className="grid gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]"><select aria-label="Arrow from" className={field} value={from} onChange={(e) => setFrom(e.target.value)}><option value="">From…</option>{value.nodes.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}</select><select aria-label="Arrow to" className={field} value={to} onChange={(e) => setTo(e.target.value)}><option value="">To…</option>{value.nodes.map((n) => <option key={n.id} value={n.id}>{n.label}</option>)}</select><input aria-label="Arrow label" placeholder="Label (optional)" className={field} value={edgeLabel} onChange={(e) => setEdgeLabel(e.target.value)} /><Button type="button" variant="outline" disabled={!from || !to || from === to} onClick={() => { onChange({ ...value, edges: [...value.edges, { id: crypto.randomUUID(), from, to, label: edgeLabel }] }); setEdgeLabel(""); }}><Plus /> Arrow</Button></div>}
+    {!!value.edges.length && <ul className="space-y-2">{value.edges.map((edge) => <li key={edge.id} className="flex items-center justify-between gap-3 text-sm"><span>{value.nodes.find((n) => n.id === edge.from)?.label} → {value.nodes.find((n) => n.id === edge.to)?.label}{edge.label ? ` · ${edge.label}` : ""}</span><Button type="button" variant="ghost" size="icon" aria-label="Delete arrow" onClick={() => onChange({ ...value, edges: value.edges.filter((e) => e.id !== edge.id) })}><Trash2 /></Button></li>)}</ul>}
+  </div>;
+}
