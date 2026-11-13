@@ -119,7 +119,7 @@ export function analyze(m: Manuscript, venue: Venue, keywords: string[]): Findin
     for (const [rowIndex, row] of f.data.entries()) {
       const match = row.label.match(/\b(accuracy|precision|recall|f1|auc)\b/i);
       if (match) {
-        const key = match[1].toLowerCase(); const entries = metrics.get(key) ?? [];
+        const key = (match[1] ?? "").toLowerCase(); const entries = metrics.get(key) ?? [];
         entries.push({ value: String(row.value), location: `Figure ${figureIndex + 1} · ${row.label}` }); metrics.set(key, entries);
       }
       const linked = linkedResults.get(f.resultIds[rowIndex] ?? "");
@@ -137,6 +137,7 @@ export function analyze(m: Manuscript, venue: Venue, keywords: string[]): Findin
     const requiredPixels = f.width === "double" ? 2100 : 1050;
     if (f.kind === "image" && f.imageWidth > 0 && f.imageWidth < requiredPixels) add({ id: `resolution:${f.id}`, severity: "warning", category: "Formatting", location: "Figures", title: "Image may be below print resolution", explanation: `At 300 DPI, this ${f.width}-column image should be about ${requiredPixels} pixels wide. Confirm the venue's artwork rules.`, compared: `${f.imageWidth} pixels ↔ approximately ${requiredPixels} pixels for 300 DPI` });
   }
+  if (!m.authors.trim()) add({ id: "authors", severity: "error", category: "Venue", location: "Formatting", title: "Add manuscript authors", explanation: "Enter author names and affiliations in Formatting.", compared: "Title page ↔ author details" });
   const ai = m.semanticReview;
   if (ai) {
     for (const [index, f] of ai.result.findings.entries()) add({ id: `ai:${ai.id}:${index}`, severity: "warning", category: "Integrity", location: m.sections.find((s) => s.id === f.sectionId)?.title ?? "AI review", ...(f.sectionId ? { sectionId: f.sectionId } : {}), title: `AI review: ${f.title}`, explanation: `${f.explanation} Confidence: ${f.confidence}. This contextual finding is a potential issue, not a confirmed scientific error.`, compared: `${f.quote} ↔ ${f.evidence}` });
