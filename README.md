@@ -4,7 +4,7 @@ Prepare a website for the project. An SRS file is attached follow the color sche
 
 This project was built with [Lovable](https://lovable.dev).
 
-## Build with Lovable
+
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/bb3ce9dc-7b66-462e-97c2-1f8f98ebadca).
 
