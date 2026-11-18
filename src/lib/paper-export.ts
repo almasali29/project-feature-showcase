@@ -1,15 +1,25 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, ImageRun, AlignmentType } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, ImageRun, AlignmentType, Header, Footer, PageNumber, ExternalHyperlink, Math as OMath, MathRun, TabStopType } from "docx";
+import { headingNumber, headingText, profileFor } from "./publisher-profiles";
 import type { Figure } from "./manuscript";
 import { floatLabels, floatsFor } from "./floats";
 import type { Manuscript } from "./manuscript";
 import type { Project } from "./projects";
 import { rulesFor } from "./manuscript";
 import { bibliography, orderedReferences } from "./citations";
-import { renderSection } from "@/components/paper-preview";
+import { equationStart, renderSection } from "@/components/paper-preview";
 
 export async function wordBlob(m: Manuscript, project: Project) {
   const rules = rulesFor(m, project.target_venue);
-  const children: (Paragraph | Table)[] = [new Paragraph({ text: project.title, heading: HeadingLevel.TITLE }), new Paragraph(m.authors)];
+  const p = profileFor(project.target_venue); const body = rules.fontSize * 2;
+  const children: (Paragraph | Table)[] = [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: project.title, size: Math.round(p.font.titlePt * 2), bold: project.target_venue !== "IEEE" })] }), ...m.authors.split("\n").map((line) => new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun(line)] }))];
+  const indent = Math.round(p.paragraph.indentEm * rules.fontSize * 20);
+  const run = (child: ChildNode, extra: { bold?: boolean; italics?: boolean } = {}): TextRun[] => {
+    if (child.nodeType === 3) return [new TextRun({ text: child.textContent ?? "", ...extra })];
+    const el = child as HTMLElement; const next = { bold: extra.bold || el.tagName === "STRONG" || el.tagName === "B", italics: extra.italics || el.tagName === "EM" || el.tagName === "I" };
+    if (el.tagName === "SUP") return [new TextRun({ text: el.textContent ?? "", superScript: true, ...next })];
+    if (el.tagName === "SUB") return [new TextRun({ text: el.textContent ?? "", subScript: true, ...next })];
+    return Array.from(el.childNodes).flatMap((c) => run(c, next));
+  };
   const labels = floatLabels(m, project.target_venue);
   const align = (el: Element) => { const a = (el as HTMLElement).style?.textAlign; return a === "center" ? AlignmentType.CENTER : a === "right" ? AlignmentType.RIGHT : a === "justify" ? AlignmentType.JUSTIFIED : AlignmentType.LEFT; };
   async function float(f: Figure) {
@@ -24,22 +34,36 @@ export async function wordBlob(m: Manuscript, project: Project) {
     } else if (f.data.length) children.push(new Table({ rows: f.data.map((row) => new TableRow({ children: [row.label, String(row.value)].map((text) => new TableCell({ children: [new Paragraph(text)] })) })) }));
     if (!l.above) children.push(caption);
   }
-  for (const s of m.sections) {
-    children.push(new Paragraph({ text: s.title, heading: HeadingLevel.HEADING_1 }));
-    const container = document.createElement("div"); container.innerHTML = renderSection(s.html, m, project);
+  let num = 0;
+  for (const [index, s] of m.sections.entries()) {
+    const isAbstract = s.title.toLowerCase() === "abstract"; if (!isAbstract) num++;
+    children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: p.headings.align === "center" ? AlignmentType.CENTER : AlignmentType.LEFT, children: [new TextRun({ text: `${isAbstract ? "" : headingNumber(p, num)}${headingText(p, s.title)}`, bold: p.headings.bold, smallCaps: p.headings.case === "smallcaps", size: p.font.headingPt * 2, font: p.font.docx, color: "000000" })] }));
+    const container = document.createElement("div"); container.innerHTML = renderSection(s.html, m, project, { eqStart: equationStart(m, index), word: true });
     for (const node of Array.from(container.children)) {
       if (node.tagName === "TABLE") {
         children.push(new Table({ rows: Array.from(node.querySelectorAll("tr")).map((row) => new TableRow({ children: Array.from(row.querySelectorAll("td, th")).map((cell) => new TableCell({ children: [new Paragraph(cell.textContent ?? "")] })) })) }));
+      } else if (node.getAttribute("data-eq")) {
+        children.push(new Paragraph({ tabStops: [{ type: TabStopType.CENTER, position: 4500 }, { type: TabStopType.RIGHT, position: rules.columns === 2 ? 4800 : 9000 }], children: [new TextRun("\t"), new OMath({ children: [new MathRun(node.textContent ?? "")] }), new TextRun(`\t${node.getAttribute("data-eq")}`)] }));
+      } else if (node.tagName === "UL" || node.tagName === "OL") {
+        Array.from(node.children).forEach((li, i) => children.push(new Paragraph({ indent: { left: 360 }, children: [new TextRun(node.tagName === "OL" ? `${i + 1}. ` : "• "), ...run(li)] })));
       } else {
-        children.push(new Paragraph({ alignment: align(node), children: Array.from(node.childNodes).map((child) => new TextRun({ text: child.textContent ?? "", bold: child.nodeName === "STRONG", italics: child.nodeName === "EM" })) }));
+        const a = align(node);
+        children.push(new Paragraph({ alignment: a === AlignmentType.LEFT && p.paragraph.justify ? AlignmentType.JUSTIFIED : a, indent: { firstLine: isAbstract ? 0 : indent }, spacing: { line: Math.round(p.font.lineHeight * 240) }, children: run(node) }));
       }
     }
+    if (isAbstract && project.keywords.length) children.push(new Paragraph({ children: [new TextRun({ text: project.target_venue === "IEEE" ? "Index Terms—" : "Keywords: ", bold: true }), new TextRun(project.keywords.join(", "))] }));
     for (const f of floatsFor(m, s.id)) await float(f);
   }
   for (const f of floatsFor(m, undefined)) await float(f);
-  children.push(new Paragraph({ text: "References", heading: HeadingLevel.HEADING_1 }), ...bibliography(orderedReferences(m, project.target_venue), project.target_venue).map((text) => new Paragraph(text)));
+  const ordered = orderedReferences(m, project.target_venue);
+  children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, alignment: p.headings.align === "center" ? AlignmentType.CENTER : AlignmentType.LEFT, children: [new TextRun({ text: headingText(p, "References"), bold: p.headings.bold, smallCaps: p.headings.case === "smallcaps", size: p.font.headingPt * 2, font: p.font.docx, color: "000000" })] }),
+    ...bibliography(ordered, project.target_venue).map((text, i) => { const r = ordered[i]; const href = r?.doi ? `https://doi.org/${r.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}` : r?.url;
+      return new Paragraph({ indent: { left: 440, hanging: 440 }, children: [new TextRun({ text, size: body - 2 }), ...(href && !text.includes(href) ? [new TextRun(" "), new ExternalHyperlink({ link: href, children: [new TextRun({ text: href, style: "Hyperlink", size: body - 2 })] })] : [])] }); }));
   const margin = Math.round(rules.margin * 56.693);
-  const doc = new Document({ styles: { default: { document: { run: { font: "Times New Roman", size: rules.fontSize * 2 } } } }, sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: margin, bottom: margin, left: margin, right: margin } }, column: { count: rules.columns, space: 400 } }, children }] });
+  const tw = (mm: number) => Math.round(mm * 56.693);
+  const headerText = p.header(project.title);
+  const pageNo = new Paragraph({ alignment: p.footer === "right" ? AlignmentType.RIGHT : AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], size: 18 })] });
+  const doc = new Document({ styles: { default: { document: { run: { font: p.font.docx, size: body } } } }, sections: [{ properties: { page: { size: { width: tw(p.page.widthMm), height: tw(p.page.heightMm) }, margin: { top: margin, bottom: margin, left: margin, right: margin } }, column: { count: rules.columns, space: tw(p.columnGapMm || 6) } }, headers: { default: new Header({ children: headerText ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: headerText, size: 16 })] })] : [] }) }, footers: { default: new Footer({ children: [pageNo] }) }, children }] });
   return Packer.toBlob(doc);
 }
 export async function exportWord(m: Manuscript, project: Project) {
