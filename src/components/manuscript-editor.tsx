@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { TableKit } from "@tiptap/extension-table";
 import Superscript from "@tiptap/extension-superscript";
 import Subscript from "@tiptap/extension-subscript";
+import TextAlign from "@tiptap/extension-text-align";
 import { useEffect, useRef } from "react";
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
@@ -20,12 +21,12 @@ function tokenLabels(get: () => Record<string, string>) {
     return DecorationSet.create(state.doc, decos);
   } } })] });
 }
-import { Bold, Italic, Undo2, Redo2, List, Table2, Heading2, Sigma, Superscript as SupIcon, Subscript as SubIcon } from "lucide-react";
+import { Bold, Italic, Undo2, Redo2, List, Table2, Heading2, Sigma, Superscript as SupIcon, AlignLeft, AlignCenter, AlignRight, AlignJustify, Subscript as SubIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ManuscriptEditor({ html, onChange, insertion, onInserted, labels = {} }: { labels?: Record<string, string>; html: string; onChange: (html: string) => void; insertion: string; onInserted: () => void }) {
   const labelsRef = useRef(labels); labelsRef.current = labels;
-  const editor = useEditor({ extensions: [StarterKit, TableKit, Superscript, Subscript, tokenLabels(() => labelsRef.current)], content: html, immediatelyRender: false, onUpdate: ({ editor }) => onChange(editor.getHTML()), editorProps: { attributes: { class: "manuscript-prose min-h-[440px] outline-none", "aria-label": "Section content" } } });
+  const editor = useEditor({ extensions: [StarterKit, TableKit, TextAlign.configure({ types: ["heading", "paragraph"] }), Superscript, Subscript, tokenLabels(() => labelsRef.current)], content: html, immediatelyRender: false, onUpdate: ({ editor }) => onChange(editor.getHTML()), editorProps: { attributes: { class: "manuscript-prose min-h-[440px] outline-none", "aria-label": "Section content" } } });
   useEffect(() => { if (editor && html !== editor.getHTML()) editor.commands.setContent(html, { emitUpdate: false }); }, [editor, html]);
   useEffect(() => { if (editor && insertion) { editor.chain().focus().insertContent(insertion).run(); onInserted(); } }, [editor, insertion, onInserted]);
   const labelKey = JSON.stringify(labels);
@@ -34,6 +35,10 @@ export function ManuscriptEditor({ html, onChange, insertion, onInserted, labels
     { label: "Bold", Icon: Bold, run: () => editor?.chain().focus().toggleBold().run() },
     { label: "Italic", Icon: Italic, run: () => editor?.chain().focus().toggleItalic().run() },
     { label: "Heading", Icon: Heading2, run: () => editor?.chain().focus().toggleHeading({ level: 2 }).run() },
+    { label: "Align left", Icon: AlignLeft, run: () => editor?.chain().focus().setTextAlign("left").run() },
+    { label: "Align center", Icon: AlignCenter, run: () => editor?.chain().focus().setTextAlign("center").run() },
+    { label: "Align right", Icon: AlignRight, run: () => editor?.chain().focus().setTextAlign("right").run() },
+    { label: "Justify", Icon: AlignJustify, run: () => editor?.chain().focus().setTextAlign("justify").run() },
     { label: "Bullet list", Icon: List, run: () => editor?.chain().focus().toggleBulletList().run() },
     { label: "Insert table", Icon: Table2, run: () => editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
     { label: "Superscript", Icon: SupIcon, run: () => editor?.chain().focus().toggleSuperscript().run() },

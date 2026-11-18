@@ -4,7 +4,8 @@ import { BarChart, Bar, LineChart, Line, ScatterChart, Scatter, XAxis, YAxis, Ca
 import type { Manuscript, Figure } from "@/lib/manuscript";
 import { rulesFor } from "@/lib/manuscript";
 import type { Project } from "@/lib/projects";
-import { bibliography, citationLabel, registerStyles } from "@/lib/citations";
+import { floatLabels, floatsFor } from "@/lib/floats";
+import { bibliography, citationLabels, orderedReferences, registerStyles } from "@/lib/citations";
 import ieee from "@/assets/csl/ieee.csl?raw";
 import springer from "@/assets/csl/springer.csl?raw";
 import acm from "@/assets/csl/acm.csl?raw";
@@ -14,11 +15,11 @@ registerStyles({ ieee, springer, acm, elsevier });
 export function renderSection(html: string, m: Manuscript, project: Project) {
   const safe = DOMPurify.sanitize(html);
   return safe.replace(/\[\[cite:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_match, id: string) => {
-    const index = m.references.findIndex((r) => r.id === id); const r = m.references[index]; return r ? DOMPurify.sanitize(citationLabel(r, index, project.target_venue)) : "[Missing reference]";
-  }).replace(/\[\[fig:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_match, id: string) => { const index = m.figures.findIndex((f) => f.id === id); return index < 0 ? "[Missing figure]" : `Figure ${index + 1}`; }).replace(/\$\$([^$]+)\$\$/g, (_match, tex: string) => katex.renderToString(tex, { throwOnError: false, trust: false }));
+    const label = citationLabels(m, project.target_venue)[id]; return label ? DOMPurify.sanitize(label) : "[Missing reference]";
+  }).replace(/\](\s+)\[(?=\d+\])/g, "], [").replace(/\)\s+\((?=[^()]*, (?:\d{4}|n\.d\.)\))/g, "; ").replace(/\[\[fig:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_match, id: string) => floatLabels(m, project.target_venue)[id]?.ref ?? "[Missing figure]").replace(/\$\$([^$]+)\$\$/g, (_match, tex: string) => katex.renderToString(tex, { throwOnError: false, trust: false }));
 }
 export function FigureView({ figure }: { figure: Figure }) {
-  if (figure.kind === "image") return <img src={figure.image} alt={figure.caption || "Manuscript figure"} className="mx-auto max-h-96 max-w-full object-contain" />;
+  if (figure.kind === "image" || figure.kind === "table") return <img src={figure.image} alt={figure.caption || "Manuscript figure"} className="mx-auto max-h-96 max-w-full object-contain" />;
   const grid = <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />;
   const axes = [<XAxis key="x" dataKey="label" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <YAxis key="y" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <Tooltip key="tooltip" />];
   const color = figure.grayscale ? "var(--foreground)" : "var(--primary)";
@@ -26,12 +27,17 @@ export function FigureView({ figure }: { figure: Figure }) {
 }
 export function PaperPreview({ manuscript: m, project }: { manuscript: Manuscript; project: Project }) {
   const rules = rulesFor(m, project.target_venue);
-  const refs = bibliography(m.references, project.target_venue);
+  const ordered = orderedReferences(m, project.target_venue); const refs = bibliography(ordered, project.target_venue);
   return <article id="paper-preview" className={`paper-page manuscript-prose venue-${project.target_venue.toLowerCase()} ${rules.columns === 2 ? "paper-two-columns" : ""}`} style={{ "--paper-font-size": `${rules.fontSize}pt`, "--paper-margin": `${rules.margin}mm` } as React.CSSProperties}>
     <header className="mb-6 text-center"><h1>{project.title}</h1><p>{m.authors}</p></header>
-    <div className="paper-body">{m.sections.map((s, index) => <div key={s.id} className="mb-5"><h2>{s.title === "Abstract" ? "" : `${index}. `}{s.title}</h2><div dangerouslySetInnerHTML={{ __html: renderSection(s.html, m, project) }} /></div>)}
-    {m.figures.map((f, i) => <figure key={f.id} className="my-8 break-inside-avoid"><FigureView figure={f} /><figcaption className="mt-4 text-center">Figure {i + 1}. {f.caption}</figcaption></figure>)}
+    <div className="paper-body">{m.sections.map((s, index) => <div key={s.id} className="mb-5"><h2>{s.title === "Abstract" ? "" : `${index}. `}{s.title}</h2><div dangerouslySetInnerHTML={{ __html: renderSection(s.html, m, project) }} />{floatsFor(m, s.id).map((f) => <Float key={f.id} f={f} m={m} project={project} />)}</div>)}
+    {floatsFor(m, undefined).map((f) => <Float key={f.id} f={f} m={m} project={project} />)}
     {!!project.keywords.length && <p><strong>Keywords: </strong>{project.keywords.join(", ")}</p>}
-    {!!refs.length && <div className="mt-8"><h2>References</h2>{refs.map((ref, i) => <p key={m.references[i]?.id ?? i} className="break-words">{ref}</p>)}</div>}</div>
+    {!!refs.length && <div className="mt-8"><h2>References</h2>{refs.map((ref, i) => <p key={ordered[i]?.id ?? i} className="paper-ref break-words">{ref}</p>)}</div>}</div>
   </article>;
+}
+function Float({ f, m, project }: { f: Figure; m: Manuscript; project: Project }) {
+  const l = floatLabels(m, project.target_venue)[f.id]; if (!l) return null;
+  const cap = <figcaption className={`float-caption ${l.above ? "mb-2" : "mt-2"} ${f.kind === "table" && project.target_venue === "IEEE" ? "float-caption-ieee-table" : ""}`}><span className="float-label">{l.caption}</span>{project.target_venue === "IEEE" && f.kind === "table" ? <br /> : " "}<span className={project.target_venue === "APA" ? "italic" : ""}>{l.captionText}</span></figcaption>;
+  return <figure className="paper-float my-5 break-inside-avoid">{l.above && cap}<FigureView figure={f} />{!l.above && cap}</figure>;
 }

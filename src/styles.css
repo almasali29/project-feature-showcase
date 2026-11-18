@@ -146,3 +146,16 @@ h1, h2 { letter-spacing: 0; }
 .manuscript-prose .token-hidden { font-size: 0; letter-spacing: 0; }
 .manuscript-prose .token-chip { display: inline-block; margin: 0 0.1em; padding: 0 0.4em; border-radius: 0.3em; background: color-mix(in oklab, var(--primary) 12%, transparent); color: var(--primary); font-size: 0.9em; user-select: none; }
 .manuscript-prose .token-missing { background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); }
+
+.paper-float { text-align: center; }
+.paper-float img { max-height: 22rem; width: auto; margin-inline: auto; }
+.float-caption { font-size: 0.85em; text-align: center; }
+.float-caption .float-label { font-weight: 700; }
+.venue-ieee .float-caption .float-label { font-weight: 400; }
+.float-caption-ieee-table { font-variant: small-caps; }
+.venue-apa .float-caption { text-align: left; }
+.paper-page .paper-two-columns .paper-float, .paper-two-columns .paper-float img { max-width: 100%; }
+.paper-ref { font-size: 0.9em; margin-bottom: 0.35em; }
+.venue-apa .paper-ref { padding-left: 2em; text-indent: -2em; }
+.venue-ieee .paper-ref, .venue-acm .paper-ref { padding-left: 2.2em; text-indent: -2.2em; }
+.manuscript-prose [style*="text-align: center"], .manuscript-prose [style*="text-align:center"] { text-align: center; }

@@ -2,10 +2,10 @@ import type { Venue } from "./projects";
 
 export type Section = { id: string; title: string; html: string };
 export type Reference = { id: string; title: string; authors: string; year: string; venue: string; doi: string; url: string; notes: string; tags: string; collection: string };
-export type Figure = { id: string; caption: string; kind: "bar" | "line" | "scatter" | "image"; data: { label: string; value: number }[]; image: string; xLabel: string; yLabel: string; grayscale: boolean };
+export type Figure = { id: string; caption: string; kind: "bar" | "line" | "scatter" | "image" | "table"; sectionId?: string | undefined; data: { label: string; value: number }[]; image: string; xLabel: string; yLabel: string; grayscale: boolean };
 export type VenueRules = { columns: number; fontSize: number; margin: number; abstractLimit: number; keywordLimit: number; pageLimit: number; required: string[] };
 export type Manuscript = { sections: Section[]; references: Reference[]; figures: Figure[]; authors: string; rules: Partial<Record<Venue, VenueRules>>; statuses: Record<string, "acknowledged">; snapshots: { id: string; date: string; sections: Section[] }[]; notes: string };
-export type Finding = { id: string; severity: "error" | "warning"; category: "Integrity" | "Citations" | "Formatting" | "Reproducibility" | "Venue"; location: string; sectionId?: string; title: string; explanation: string; compared: string; acknowledged?: boolean };
+export type Finding = { id: string; severity: "error" | "warning"; category: "Integrity" | "Citations" | "Formatting" | "Reproducibility" | "Venue"; location: string; sectionId?: string | undefined; title: string; explanation: string; compared: string; acknowledged?: boolean };
 export const STARTER_RULES: Record<Venue, VenueRules> = {
   IEEE: { columns: 2, fontSize: 10, margin: 19, abstractLimit: 250, keywordLimit: 6, pageLimit: 8, required: ["Abstract", "Introduction", "Methods", "Results", "Conclusion"] },
   Springer: { columns: 1, fontSize: 10, margin: 25, abstractLimit: 250, keywordLimit: 6, pageLimit: 15, required: ["Abstract", "Introduction", "Methods", "Results", "Conclusion"] },

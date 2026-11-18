@@ -1,6 +1,6 @@
 import { Cite, plugins } from "@citation-js/core";
 import "@citation-js/plugin-csl";
-import type { Reference } from "./manuscript";
+import type { Manuscript, Reference } from "./manuscript";
 import type { Venue } from "./projects";
 
 export function citationLabel(r: Reference, index: number, venue: Venue) {
@@ -22,4 +22,15 @@ export function bibliography(refs: Reference[], venue: Venue): string[] {
 export function registerStyles(styles: Record<string, string>) {
   const csl = plugins.config.get("@csl") as unknown as { styles: { add: (name: string, xml: string) => void } };
   for (const [name, xml] of Object.entries(styles)) csl.styles.add(name, xml);
+}
+/** Numbered venues list sources in order of first citation; APA sorts alphabetically by first author. */
+export function orderedReferences(m: Manuscript, venue: Venue): Reference[] {
+  if (venue === "APA") return [...m.references].sort((a, b) => `${a.authors}${a.year}`.localeCompare(`${b.authors}${b.year}`));
+  const order: string[] = [];
+  for (const s of m.sections) for (const match of s.html.matchAll(/\[\[cite:([^\]]+)\]\]/g)) if (!order.includes(match[1]!)) order.push(match[1]!);
+  const rank = (r: Reference) => { const i = order.indexOf(r.id); return i < 0 ? order.length + m.references.indexOf(r) : i; };
+  return [...m.references].sort((a, b) => rank(a) - rank(b));
+}
+export function citationLabels(m: Manuscript, venue: Venue): Record<string, string> {
+  return Object.fromEntries(orderedReferences(m, venue).map((r, i) => [r.id, citationLabel(r, i, venue)]));
 }
