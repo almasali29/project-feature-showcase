@@ -1,22 +1,18 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, ImageRun } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell } from "docx";
 import type { Manuscript } from "./manuscript";
 import type { Project } from "./projects";
-import { rulesFor, tableKey, tableNumber } from "./manuscript";
+import { rulesFor } from "./manuscript";
 import { bibliography } from "./citations";
 import { renderSection } from "@/components/paper-preview";
-import { figurePngBytes } from "./figure-export";
 
 export async function wordBlob(m: Manuscript, project: Project) {
   const rules = rulesFor(m, project.target_venue);
   const children: (Paragraph | Table)[] = [new Paragraph({ text: project.title, heading: HeadingLevel.TITLE }), new Paragraph(m.authors)];
   for (const s of m.sections) {
     children.push(new Paragraph({ text: s.title, heading: HeadingLevel.HEADING_1 }));
-    const container = document.createElement("div"); container.innerHTML = renderSection(s.html, m, project, s.id);
-    let tableIndex = 0;
+    const container = document.createElement("div"); container.innerHTML = renderSection(s.html, m, project);
     for (const node of Array.from(container.children)) {
       if (node.tagName === "TABLE") {
-        const index = tableIndex++; const caption = m.tableCaptions[tableKey(s.id, index)] ?? "";
-        children.push(new Paragraph({ children: [new TextRun({ text: `Table ${tableNumber(m, s.id, index)}${caption ? `. ${caption}` : ""}`, bold: true })] }));
         children.push(new Table({ rows: Array.from(node.querySelectorAll("tr")).map((row) => new TableRow({ children: Array.from(row.querySelectorAll("td, th")).map((cell) => new TableCell({ children: [new Paragraph(cell.textContent ?? "")] })) })) }));
       } else {
         children.push(new Paragraph({ children: Array.from(node.childNodes).map((child) => new TextRun({ text: child.textContent ?? "", bold: child.nodeName === "STRONG", italics: child.nodeName === "EM" })) }));
@@ -24,11 +20,8 @@ export async function wordBlob(m: Manuscript, project: Project) {
     }
   }
   for (const [i, f] of m.figures.entries()) {
-    const png = await figurePngBytes(f);
-    const width = f.width === "double" ? 650 : 420;
-    const ratio = f.kind === "image" && f.imageWidth && f.imageHeight ? f.imageHeight / f.imageWidth : 520 / 900;
-    children.push(new Paragraph({ children: [new ImageRun({ data: png, transformation: { width, height: Math.round(width * ratio) }, type: "png" })] }));
-    children.push(new Paragraph({ children: [new TextRun({ text: `Figure ${i + 1}. ${f.caption}`, bold: true })] }));
+    children.push(new Paragraph(`Figure ${i + 1}. ${f.caption}`));
+    if (f.data.length) children.push(new Table({ rows: f.data.map((row) => new TableRow({ children: [row.label, String(row.value)].map((text) => new TableCell({ children: [new Paragraph(text)] })) })) }));
   }
   children.push(new Paragraph({ text: "References", heading: HeadingLevel.HEADING_1 }), ...bibliography(m.references, project.target_venue).map((text) => new Paragraph(text)));
   const margin = Math.round(rules.margin * 56.693);

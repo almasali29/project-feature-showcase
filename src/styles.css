@@ -126,8 +126,6 @@ h1, h2 { letter-spacing: 0; }
 .manuscript-prose table { border-collapse: collapse; width: 100%; table-layout: fixed; margin: 1em 0; }
 .manuscript-prose td, .manuscript-prose th { border: 1px solid var(--border); padding: .4em; vertical-align: top; }
 .manuscript-prose th { background: var(--secondary); }
-.manuscript-prose .table-caption { caption-side: top; margin-bottom: .5em; text-align: left; font-weight: 600; }
-.manuscript-prose figure > div > svg { display: block; width: 100%; height: auto; max-height: 32rem; }
 .manuscript-prose .selectedCell { background: var(--accent); }
 .paper-page { background: var(--card); color: var(--card-foreground); padding: var(--paper-margin, 25mm); font-family: "Times New Roman", serif; font-size: var(--paper-font-size, 12pt); min-height: 900px; }
 .paper-two-columns .paper-body { column-count: 2; column-gap: 24px; }
