@@ -24,7 +24,7 @@ export function renderSection(html: string, m: Manuscript, project: Project, opt
   let n = opts.eqStart ?? 0;
   const safe = DOMPurify.sanitize(html);
   return safe
-    .replace(/\[\[cite:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_x, id: string) => { const l = labels[id]; return l ? (opts.word ? esc(l) : `<a class="cite-link" href="#ref-${esc(id)}">${esc(l)}</a>`) : "[Missing reference]"; })
+    .replace(/\[\[cite:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_x, id: string) => { const l = labels[id]; return l ? (opts.word ? `<a data-ref="${esc(id)}">${esc(l)}</a>` : `<a class="cite-link" href="#ref-${esc(id)}">${esc(l)}</a>`) : "[Missing reference]"; })
     .replace(/\](<\/a>)?(\s+)(<a[^>]*>)?\[(?=\d+\])/g, (_x, close = "", _s, open = "") => `]${close}, ${open}[`)
     .replace(/\)(<\/a>)?\s+(<a[^>]*>)?\((?=[^()]*, (?:\d{4}|n\.d\.)\))/g, (_x, close = "", open = "") => `${close}; ${open}`)
     .replace(/\[\[fig:([^\]]+)\]\](?:\s+(?=[.,;:!?]))?/g, (_x, id: string) => floats[id]?.ref ?? "[Missing figure]")
@@ -33,6 +33,8 @@ export function renderSection(html: string, m: Manuscript, project: Project, opt
     .replace(/\$\$([^$]+)\$\$/g, (_x, tex: string) => opts.word ? esc(tex) : katex.renderToString(tex, { throwOnError: false, trust: false }));
 }
 export function FigureView({ figure }: { figure: Figure }) {
+  if (figure.kind === "table" && figure.rows?.length) { const [head = [], ...body] = figure.rows; const al = (i: number) => ({ textAlign: figure.align?.[i] ?? "left" }) as React.CSSProperties;
+    return <div className="paper-table-wrap"><table className="paper-table"><thead><tr>{head.map((c, i) => <th key={i} style={al(i)}>{c}</th>)}</tr></thead><tbody>{body.map((r, j) => <tr key={j}>{r.map((c, i) => <td key={i} style={al(i)}>{c}</td>)}</tr>)}</tbody></table></div>; }
   if (figure.kind === "image" || figure.kind === "table") return <img src={figure.image} alt={figure.caption || "Manuscript figure"} className="mx-auto max-h-96 max-w-full object-contain" />;
   const grid = <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />;
   const axes = [<XAxis key="x" dataKey="label" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <YAxis key="y" tick={{ fill: "var(--foreground)", fontSize: 11 }} />, <Tooltip key="tooltip" />];

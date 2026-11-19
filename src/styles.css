@@ -129,9 +129,9 @@ h1, h2 { letter-spacing: 0; }
 .manuscript-prose .selectedCell { background: var(--accent); }
 .paper-page { background: var(--card); color: var(--card-foreground); width: min(100%, var(--paper-width, 210mm)); margin-inline: auto; padding: var(--paper-margin, 25mm); font-family: var(--paper-font, "Times New Roman", serif); font-size: var(--paper-font-size, 12pt); line-height: var(--paper-line, 1.3); min-height: 900px; box-shadow: 0 1px 6px color-mix(in oklab, var(--foreground) 12%, transparent); }
 .paper-page h1, .paper-page h2 { font-family: var(--paper-font); }
-.paper-title-block { text-align: center; margin-bottom: 1.5em; column-span: all; }
+.paper-title-block { text-align: center; margin: 0 0 1.2em; column-span: all; }
 .paper-page .paper-title-block p { text-align: center; }
-.paper-title-block h1 { font-size: var(--paper-title); font-weight: 400; line-height: 1.2; margin-bottom: .6em; }
+.paper-title-block h1 { font-size: var(--paper-title); font-weight: 400; line-height: 1.15; margin: 0 0 .5em; }
 .venue-springer .paper-title-block h1, .venue-acm .paper-title-block h1, .venue-apa .paper-title-block h1, .venue-elsevier .paper-title-block h1 { font-weight: 700; }
 .paper-page h2 { font-size: var(--paper-heading); text-align: var(--heading-align); font-weight: var(--heading-weight); margin: 1em 0 .4em; }
 .heading-smallcaps h2 { font-variant: small-caps; }
@@ -160,6 +160,10 @@ h1, h2 { letter-spacing: 0; }
   .paper-link { color: #000; }
   .paper-float, .paper-equation, .paper-page h2 { break-inside: avoid; }
   .paper-page h2 { break-after: avoid; }
+  .paper-page p { orphans: 2; widows: 2; }
+  .paper-page { min-height: 0 !important; }
+  .paper-table-wrap, .paper-page table { break-inside: avoid; }
+  .paper-print-body { margin: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .reveal, .animate-rise, .highlight { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
@@ -181,3 +185,21 @@ h1, h2 { letter-spacing: 0; }
 .venue-apa .paper-ref { padding-left: 2em; text-indent: -2em; }
 .venue-ieee .paper-ref, .venue-acm .paper-ref { padding-left: 2.2em; text-indent: -2.2em; }
 .manuscript-prose [style*="text-align: center"], .manuscript-prose [style*="text-align:center"] { text-align: center; }
+
+/* Academic (booktabs-style) tables: horizontal rules only, bold headings, fits the column/page. */
+.paper-table-wrap { max-width: 100%; overflow-x: auto; margin: .3em 0; }
+.paper-page table, .paper-table { border-collapse: collapse; width: auto; max-width: 100%; margin: .4em auto; font-size: .85em; line-height: 1.25; table-layout: auto; border-top: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; }
+.paper-page th, .paper-page td, .paper-table th, .paper-table td { border: 0; padding: .2em .7em; text-indent: 0; background: none; vertical-align: top; }
+.paper-page thead th, .paper-table thead th, .paper-page tr:first-child th { font-weight: 700; border-bottom: .75px solid currentColor; }
+.paper-page td p, .paper-page th p { text-indent: 0; margin: 0; }
+.paper-two-columns .paper-table { font-size: .8em; }
+.venue-apa .paper-table, .venue-apa .paper-page table { margin-left: 0; }
+/* Per-publisher vertical rhythm */
+.paper-page section + section h2 { margin-top: .9em; }
+.venue-ieee .paper-title-block h1 { margin-bottom: .35em; }
+.venue-ieee .paper-page h2, .venue-ieee h2, .venue-acm h2 { margin: .8em 0 .3em; }
+.venue-springer h2, .venue-elsevier h2 { margin: 1.1em 0 .45em; }
+.venue-apa h2 { margin: .5em 0 0; }
+.venue-apa .paper-title-block { margin-bottom: 1em; }
+.paper-float { margin: .8em 0 !important; }
+.float-caption { margin: .25em 0 !important; }

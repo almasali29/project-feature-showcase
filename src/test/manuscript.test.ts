@@ -24,3 +24,15 @@ describe("Manuscript rules", () => {
     expect(analyze(m, "IEEE", []).find((f) => f.id === "abstract-limit")?.compared).toBe("2 words ↔ 1 word limit");
   });
 });
+import { analyze as analyzeFloats, newManuscript as freshManuscript } from "@/lib/manuscript";
+describe("Figure and table tracking", () => {
+  it("reports an unreferenced table as a table, numbered separately from figures", () => {
+    const m = freshManuscript();
+    const base = { caption: "C", data: [], image: "data:image/png;base64,AA", xLabel: "", yLabel: "", grayscale: false };
+    m.figures = [{ ...base, id: "f1", kind: "image" }, { ...base, id: "t1", kind: "table", rows: [["A", "B"], ["1", "2"]] }];
+    m.sections[1]!.html = "<p>See [[fig:f1]].</p>";
+    const titles = analyzeFloats(m, "IEEE", []).map((f) => f.title);
+    expect(titles).toContain("Table 1 is not referenced");
+    expect(titles.some((t) => t.startsWith("Figure") && t.includes("not referenced"))).toBe(false);
+  });
+});

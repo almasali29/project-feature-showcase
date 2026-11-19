@@ -2,7 +2,7 @@ import type { Venue } from "./projects";
 
 export type Section = { id: string; title: string; html: string };
 export type Reference = { id: string; title: string; authors: string; year: string; venue: string; doi: string; url: string; notes: string; tags: string; collection: string };
-export type Figure = { id: string; caption: string; kind: "bar" | "line" | "scatter" | "image" | "table"; sectionId?: string | undefined; data: { label: string; value: number }[]; image: string; xLabel: string; yLabel: string; grayscale: boolean };
+export type Figure = { id: string; caption: string; kind: "bar" | "line" | "scatter" | "image" | "table"; sectionId?: string | undefined; data: { label: string; value: number }[]; image: string; xLabel: string; yLabel: string; grayscale: boolean; rows?: string[][] | undefined; align?: ("left" | "center" | "right")[] | undefined };
 export type VenueRules = { columns: number; fontSize: number; margin: number; abstractLimit: number; keywordLimit: number; pageLimit: number; required: string[] };
 export type Manuscript = { sections: Section[]; references: Reference[]; figures: Figure[]; authors: string; rules: Partial<Record<Venue, VenueRules>>; statuses: Record<string, "acknowledged">; snapshots: { id: string; date: string; sections: Section[] }[]; notes: string };
 export type Finding = { id: string; severity: "error" | "warning"; category: "Integrity" | "Citations" | "Formatting" | "Reproducibility" | "Venue"; location: string; sectionId?: string | undefined; title: string; explanation: string; compared: string; acknowledged?: boolean };
@@ -80,8 +80,10 @@ export function analyze(m: Manuscript, venue: Venue, keywords: string[]): Findin
   }
   for (const item of reproducibility(m)) if (!item.reported) add({ id: `repro:${item.name}`, severity: "warning", category: "Reproducibility", location: "Methods", title: `${item.name} not detected`, explanation: "Keyword screening did not find a concrete disclosure. Report the detail or review this warning. This is not a semantic reproducibility assessment.", compared: `Manuscript text ↔ ${item.name} disclosure` });
   for (const f of m.figures) {
-    if (!f.caption.trim()) add({ id: `caption:${f.id}`, severity: "error", category: "Formatting", location: "Figures", title: "Figure is missing its caption", explanation: "Add a descriptive caption before exporting.", compared: `Figure ${m.figures.indexOf(f) + 1} ↔ caption` });
-    if (!allText.includes(`[[fig:${f.id}]]`)) add({ id: `figure-unused:${f.id}`, severity: "warning", category: "Formatting", location: "Figures", title: "Figure is not referenced", explanation: "Insert a figure reference in the manuscript.", compared: `Figure ${m.figures.indexOf(f) + 1} ↔ manuscript` });
+    const tab = f.kind === "table"; const kind = tab ? "Table" : "Figure";
+    const n = m.figures.filter((x) => (x.kind === "table") === tab).indexOf(f) + 1;
+    if (!f.caption.trim()) add({ id: `caption:${f.id}`, severity: "error", category: "Formatting", location: "Figures", title: `${kind} is missing its ${tab ? "title" : "caption"}`, explanation: `Add a descriptive ${tab ? "title" : "caption"} before exporting.`, compared: `${kind} ${n} ↔ caption` });
+    if (!allText.includes(`[[fig:${f.id}]]`)) add({ id: `${tab ? "table" : "figure"}-unused:${f.id}`, severity: "warning", category: "Formatting", location: "Figures", title: `${kind} ${n} is not referenced`, explanation: `Insert a reference to ${kind.toLowerCase()} ${n} in the manuscript text.`, compared: `${kind} ${n} ↔ manuscript` });
   }
   if (!m.authors.trim()) add({ id: "authors", severity: "error", category: "Venue", location: "Formatting", title: "Add manuscript authors", explanation: "Enter author names and affiliations in Formatting.", compared: "Title page ↔ author details" });
   return findings.sort((a, b) => (a.severity === "error" ? 0 : 1) - (b.severity === "error" ? 0 : 1));
